@@ -1,33 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { getCountry } from '../api';
 
-interface Country {
+export interface Country {
   name: string;
 }
 
-const CountryCity: React.FC = () => {
+function CountryCity() {
   const [countries, setCountries] = useState<Country[]>([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await axios.get('https://restcountries.com/v3.1/all');
-        const countryData = response.data;
-        const countryNames = countryData.map((country: any) => {
-          return {
-            name: country.name.common
-          };
-        });
-        setCountries(countryNames);
-      } catch (error) {
-        console.error('Error fetching countries:', error);
-      }
-    };
-
-    fetchCountries();
-  }, []);
+  const { data: countryData, isLoading } = useQuery<Country[]>(
+    ['cities'], getCountry
+  );;
+ 
 
   const handleCountryClick = (country: string) => {
     navigate(`/weather/${country}`);
@@ -37,9 +24,9 @@ const CountryCity: React.FC = () => {
     <div>
       <h2>Select a country:</h2>
       <ul>
-        {countries.map((country, index) => (
+        {countryData.map((country, index) => (
           <li key={index}>
-            <button onClick={() => handleCountryClick(country.name)}>
+            <button onClick={() => handleCountryClick(country.name+"")}>
               {country.name}
             </button>
           </li>

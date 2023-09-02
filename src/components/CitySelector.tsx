@@ -1,61 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { getCity } from '../api';
+import { Country } from './CountryCity';
 
 interface RouteParams {
   country: string;
-  city: string;
+  city?: string; // city 파라미터를 선택적으로 추가
 }
 
 interface City {
-  name: string;
+  name?: string;
+  city?: string;
 }
 
-const CitySelector: React.FC = () => {
-  const { country, city } = useParams();
-  const [cities, setCities] = useState<City[]>([]);
+
+function CitySelector() {
+  const { country } = useParams<RouteParams>(); // 파라미터에서 city를 선택적으로 받음
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await axios.get(`https://api.open-meteo.com/v1/forecast?city=${city}`);
-        
-        const cityData = response.data.city;
-        
-        const cityNames = cityData.map((city: any) => {
-          return {
-            name: city.name
-          };
-        });
-        setCities(cityNames);
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-      }
-    };
+  const { data: citiesData, isLoading } = useQuery<City[]>(
+    ['cities', country],
+    () => getCity(country) // 이 부분을 수정
+  );
 
-    fetchCities();
-  }, [country]);
-
-  const handleCityClick = (city: string) => {
-    navigate(`/weather/${country}/${city}`);
+  const handleCityClick = (cityName: string) => {
+    navigate(`/weather/${country}/${cityName}`);
   };
- 
+
   return (
     <div>
-      <h2>Select a city in {country}:</h2>
-      <ul>
-        {cities.map((city, index) => (
-          <li key={index}>
-            <button onClick={() => handleCityClick(city.name)}>
-              {city.name}
-            </button>
-          </li>
-        ))}
-      </ul>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <div>
+          <h2>Select a city in {country}:</h2>
+          <ul>
+            {citiesData?.map((city, index) => (
+              <li key={index}>
+                <button onClick={() => handleCityClick(city.name || '')}>
+                  {city.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default CitySelector;
