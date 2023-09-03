@@ -1,28 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { getCity } from '../api';
-import { Country } from './CountryCity';
 
-interface RouteParams {
-  country: string;
-  city?: string; // city 파라미터를 선택적으로 추가
-}
 
 interface City {
-  name?: string;
-  city?: string;
+  name: string;
 }
 
-
 function CitySelector() {
-  const { country } = useParams<RouteParams>(); // 파라미터에서 city를 선택적으로 받음
+  const { country } = useParams();
   const navigate = useNavigate();
-
+  const [cities, setCities] = useState<City[]>([]);
+  
+  // useQuery를 사용하여 데이터 가져오기
   const { data: citiesData, isLoading } = useQuery<City[]>(
     ['cities', country],
-    () => getCity(country) // 이 부분을 수정
+    () => getCity(country+"")
   );
+
+  useEffect(() => {
+    // 데이터 로딩이 완료되면 cities 상태를 업데이트합니다.
+    if (citiesData && !isLoading) {
+      const cityNames = citiesData?.map((city: any) => ({
+        name: city.name
+      }));
+      setCities(cityNames);
+    }
+  }, [citiesData, isLoading]);
 
   const handleCityClick = (cityName: string) => {
     navigate(`/weather/${country}/${cityName}`);
@@ -36,7 +41,7 @@ function CitySelector() {
         <div>
           <h2>Select a city in {country}:</h2>
           <ul>
-            {citiesData?.map((city, index) => (
+            {cities.map((city, index) => (
               <li key={index}>
                 <button onClick={() => handleCityClick(city.name || '')}>
                   {city.name}
