@@ -17,7 +17,7 @@ export function getCity(country: string) {
 }
 
 export function getWeather(city: string) {
-  return fetch(`${BASE_PATH2}?q=${city}&lang=kr&appid=${API_KEY}`).then(
+  return fetch(`${BASE_PATH2}?q=${city}&lang=kr&units=metric&appid=${API_KEY}`).then(
   (response) => response.json()
   )
 };
