@@ -1,40 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getWeather,WeatherData } from '../api';
+import { getWeather, WeatherData,getWeatherIconUrl } from '../api';
 
 const Weather: React.FC = () => {
-  const { country, city } = useParams<{ country: string; city: string }>();
+  const { city } = useParams<{ city: string }>();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const data = await getWeather(city+"");
+        const data = await getWeather(city + '');
         setWeatherData(data);
+        setLoading(false); // 데이터 로딩이 끝났을 때 로딩 상태 업데이트
       } catch (error) {
         console.error('Error fetching weather data:', error);
+        setLoading(false); // 오류 발생 시에도 로딩 상태 업데이트
       }
     };
 
     fetchWeather();
   }, [city]);
 
-  if (!weatherData) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  const { name, main, weather } = weatherData;
+  if (!weatherData) {
+    return <div>Error fetching weather data.</div>;
+  }
 
+  const { name, main, weather } = weatherData;
+const weatherIconUrl = getWeatherIconUrl(weather[0]?.icon || '');
   return (
     <div>
       <h2>{name} Weather Information</h2>
-      <p>Temperature: {main.temp}°C</p>
-      <p>Humidity: {main.humidity}%</p>
-      <p>Weather: {weather[0].description}</p>
-      <img
-        src={`https://openweathermap.org/img/w/${weather[0].icon}.png`}
-        alt="Weather Icon"
-      />
+      <p> {Math.round((main.temp - 273.15) * 10) / 10}°C</p>
+      
+      <p>Humidity: {main?.humidity}%</p>
+      <p>Weather: {weather[0]?.description}</p>
+      <img src={weatherIconUrl} alt="Weather Icon" />
     </div>
   );
 };

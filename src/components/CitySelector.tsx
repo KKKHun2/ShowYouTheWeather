@@ -3,29 +3,34 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { getCity } from '../api';
 
-
 interface City {
-  name: string;
+  name: {
+    common: string;
+  };
+  countryInfo: {
+    maps: {
+      googleMaps: string;
+      openStreetMaps: string;
+    };
+  };
 }
 
 function CitySelector() {
   const { country } = useParams();
   const navigate = useNavigate();
   const [cities, setCities] = useState<City[]>([]);
-  
+
   // useQuery를 사용하여 데이터 가져오기
   const { data: citiesData, isLoading } = useQuery<City[]>(
     ['cities', country],
-    () => getCity(country+"")
+    () => getCity(country + '')
   );
 
   useEffect(() => {
     // 데이터 로딩이 완료되면 cities 상태를 업데이트합니다.
     if (citiesData && !isLoading) {
-      const cityNames = citiesData?.map((city: any) => ({
-        name: city.name
-      }));
-      setCities(cityNames);
+      console.log(citiesData);
+      setCities(citiesData);
     }
   }, [citiesData, isLoading]);
 
@@ -43,8 +48,8 @@ function CitySelector() {
           <ul>
             {cities.map((city, index) => (
               <li key={index}>
-                <button onClick={() => handleCityClick(city.name || '')}>
-                  {city.name}
+                <button onClick={() => handleCityClick(city.name.common)}>
+                  {city.name.common}
                 </button>
               </li>
             ))}
