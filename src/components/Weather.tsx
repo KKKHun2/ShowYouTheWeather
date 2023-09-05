@@ -35,8 +35,7 @@ const weatherIconUrl = getWeatherIconUrl(weather[0]?.icon || '');
   return (
     <div>
       <h2>{name} Weather Information</h2>
-      <p>기온: {main.temp}°C</p>
-      
+      <p>기온: {main.temp.toFixed(1)}°C</p>
       <p>습도: {main?.humidity}%</p>
       <p>날씨: {weather[0]?.description}</p>
       <img src={weatherIconUrl} alt="Weather Icon" />
