@@ -35,10 +35,10 @@ const weatherIconUrl = getWeatherIconUrl(weather[0]?.icon || '');
   return (
     <div>
       <h2>{name} Weather Information</h2>
-      <p> {Math.round((main.temp - 273.15) * 10) / 10}°C</p>
+      <p>기온: {main.temp}°C</p>
       
-      <p>Humidity: {main?.humidity}%</p>
-      <p>Weather: {weather[0]?.description}</p>
+      <p>습도: {main?.humidity}%</p>
+      <p>날씨: {weather[0]?.description}</p>
       <img src={weatherIconUrl} alt="Weather Icon" />
     </div>
   );
