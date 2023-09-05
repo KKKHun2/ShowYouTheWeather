@@ -1,27 +1,31 @@
 
 
-const BASE_PATH = "https://api.openweathermap.org/data/2.5/weather";
-export const API_KEY = 'd189247ce8012abe147988569fccd6a8';
-const BASE_PATH2 ="https://restcountries.com"
+const BASE_PATH2 = "https://api.openweathermap.org/data/2.5/weather";
+const BASE_PATH ="https://restcountries.com"
+const API_KEY = "6bedce92f708cdeb65b084ee01b825c0";
 
+export function getCountry() {
+  return fetch(`${BASE_PATH}/v3.1/all`).then(
+    (response) => response.json()
+  );
+}
+
+export function getCity(country: string) {
+  return fetch(`${BASE_PATH}/v3.1/name/${country}`).then(
+    (response) => response.json()
+  );
+}
 
 export function getWeather(city: string) {
-  return fetch( `${BASE_PATH}?q=${city}&appid=${API_KEY}&units=metric`).then(
+  return fetch(`${BASE_PATH2}?q=${city}&lang=kr&appid=${API_KEY}`).then(
   (response) => response.json()
   )
 };
 
-export function getCity(city: string) {
-  return fetch(`https://api.open-meteo.com/v1/forecast?city=${city}`).then(
-    (response) => response.json()
-  );
+export function getWeatherIconUrl(iconCode: string) {
+  return `https://openweathermap.org/img/w/${iconCode}.png`;
 }
 
-export function getCountry() {
-  return fetch(`${BASE_PATH2}/v3.1/all`).then(
-    (response) => response.json()
-  );
-}
 
 export interface WeatherData {
     main: {
