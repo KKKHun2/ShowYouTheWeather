@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { getCountry } from '../api';
@@ -6,19 +6,32 @@ import { getCountry } from '../api';
 export interface Country {
   name: string;
 }
-
 function CountryCity() {
   const navigate = useNavigate();
   const [countries, setCountries] = useState<Country[]>([]);
 
+  // useQuery를 사용하여 데이터 가져오기
   const { data: countryData, isLoading } = useQuery<Country[]>(
     ['countries'],
     getCountry
   );
 
+  // 데이터가 로드되었을 때만 setCountries를 사용하도록 useEffect를 사용합니다.
   useEffect(() => {
     if (!isLoading && countryData) {
-      setCountries(countryData.map((country) => ({ name: country.name })));
+      const countryNames = countryData.map((country: any) => {
+        return {
+          name: country.name.common
+         
+        };
+        
+      });
+
+      const sortedCountries = countryNames.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+
+      setCountries(sortedCountries);
     }
   }, [isLoading, countryData]);
 
@@ -27,7 +40,7 @@ function CountryCity() {
   };
 
   return (
-    <div>
+    <div className='bg-500 p-11 '>
       {isLoading ? (
         <div>Loading...</div>
       ) : (
