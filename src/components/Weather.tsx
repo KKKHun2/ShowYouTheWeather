@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getWeather, WeatherData,getWeatherIconUrl } from '../api';
+import { getWeather, WeatherData, getWeatherIconUrl } from '../api';
 
 const Weather: React.FC = () => {
   const { city } = useParams<{ city: string }>();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
         const data = await getWeather(city + '');
         setWeatherData(data);
-        setLoading(false); // 데이터 로딩이 끝났을 때 로딩 상태 업데이트
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching weather data:', error);
-        setLoading(false); // 오류 발생 시에도 로딩 상태 업데이트
+        setLoading(false);
       }
     };
 
@@ -31,14 +31,15 @@ const Weather: React.FC = () => {
   }
 
   const { name, main, weather } = weatherData;
-const weatherIconUrl = getWeatherIconUrl(weather[0]?.icon || '');
+  const weatherIconUrl = getWeatherIconUrl(weather[0]?.icon || '');
+
   return (
-    <div>
-      <h2>{name} Weather Information</h2>
-      <p>기온: {main.temp.toFixed(1)}°C</p>
+    <div className='p-5 bg-gray-500'>
+      <h2 className='m-5'>{name} Weather Information</h2>
+      <p className='ml-2'>기온: {main?.temp.toFixed(1)}°C</p>
       <p>습도: {main?.humidity}%</p>
       <p>날씨: {weather[0]?.description}</p>
-      <img src={weatherIconUrl} alt="Weather Icon" />
+      <img src={weatherIconUrl} alt="Weather Icon" className="w-32 h-32" />
     </div>
   );
 };
